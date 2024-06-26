@@ -36,19 +36,24 @@ connect_db();
 const user_schema = new mongoose.Schema({
   username: {
     type: String,
+    trim: true,
+    lowercase: true,
     required: true,
+    maxLength: 8,
   },
   first_name: {
     type: String,
     required: [true, "first name is required"],
     lowercase: true,
     trim: true,
+    maxLength: 8
   },
   last_name: {
     type: String,
     required: [true, "last name is required"],
     lowercase: true,
     trim: true,
+    maxLength: 8
   },
   hashed_password: {
     type: String,
@@ -63,9 +68,28 @@ const user_schema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     unique: true,
-    default: () => new mongoose.Types.ObjectId(),
+    default: function () {
+      return this._id;
+    },
+  },
+});
+
+const account_schema = new mongoose.Schema({
+  balance: {
+    type: Number,
+    required: true,
+    default: null,
+  },
+  user_id: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
 });
 const User = mongoose.model("User", user_schema);
+const Accounts = mongoose.model("Accounts", account_schema);
 
-module.exports = User;
+module.exports = {
+  User,
+  Accounts,
+};
